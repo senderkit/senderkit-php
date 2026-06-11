@@ -28,6 +28,11 @@ final class WebhookVerifier
         ?string $eventType = null,
         ?string $deliveryId = null,
     ): WebhookEvent {
+        if ($secret === '') {
+            // An empty HMAC key is computable by anyone, so verification would authenticate nothing.
+            throw new SignatureVerificationException('Webhook signing secret must not be empty.');
+        }
+
         [$timestamp, $signature] = $this->parseHeader($signatureHeader);
 
         $now ??= time();
@@ -41,9 +46,12 @@ final class WebhookVerifier
         }
 
         // Non-JSON body is allowed; payload falls back to [] (the HMAC already validated integrity).
-        $payload = json_decode($rawBody, true);
-        if (!is_array($payload)) {
-            $payload = [];
+        $decoded = json_decode($rawBody, true);
+        $payload = [];
+        if (is_array($decoded)) {
+            foreach ($decoded as $key => $value) {
+                $payload[(string) $key] = $value;
+            }
         }
 
         return new WebhookEvent($eventType, $deliveryId, $payload, $timestamp);

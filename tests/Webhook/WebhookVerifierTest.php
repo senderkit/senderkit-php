@@ -128,6 +128,21 @@ final class WebhookVerifierTest extends TestCase
         (new WebhookVerifier())->verify(rawBody: '{}', signatureHeader: "t={$t}", secret: self::SECRET, now: $t);
     }
 
+    public function test_rejects_empty_secret(): void
+    {
+        $body = '{"type":"message.delivered"}';
+        $t = 1_700_000_000;
+        // An empty key makes the HMAC computable by anyone; the verifier must refuse it.
+        $mac = hash_hmac('sha256', $t . '.' . $body, '');
+        $this->expectException(SignatureVerificationException::class);
+        (new WebhookVerifier())->verify(
+            rawBody: $body,
+            signatureHeader: "t={$t},v1={$mac}",
+            secret: '',
+            now: $t,
+        );
+    }
+
     public function test_rejects_empty_v1(): void
     {
         $t = 1_700_000_000;

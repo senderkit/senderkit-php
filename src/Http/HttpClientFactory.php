@@ -15,7 +15,6 @@ final class HttpClientFactory
     public function client(int $timeoutMs): ClientInterface
     {
         if (class_exists(\GuzzleHttp\Client::class)) {
-            /** @var ClientInterface */
             return new \GuzzleHttp\Client([
                 'timeout' => $timeoutMs / 1000,
                 'connect_timeout' => $timeoutMs / 1000,

@@ -157,8 +157,8 @@ class Transport
 
         $body = json_decode((string) $response->getBody(), true);
         $err = is_array($body) ? ($body['error'] ?? $body) : [];
-        $code = is_array($err) && isset($err['code']) ? (string) $err['code'] : null;
-        $message = is_array($err) && isset($err['message']) ? (string) $err['message'] : "HTTP {$status}";
+        $code = is_array($err) && isset($err['code']) && is_scalar($err['code']) ? (string) $err['code'] : null;
+        $message = is_array($err) && isset($err['message']) && is_scalar($err['message']) ? (string) $err['message'] : "HTTP {$status}";
         /** @var array<string,mixed>|list<mixed>|null $issues */
         $issues = is_array($err) && isset($err['issues']) && is_array($err['issues']) ? $err['issues'] : null;
 

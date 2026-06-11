@@ -21,15 +21,15 @@ final class Template
     /** @param array<string,mixed> $data */
     public static function fromArray(array $data): self
     {
+        $currentVersion = Hydrate::nullableAssoc($data, 'currentVersion');
+
         return new self(
             Hydrate::string($data, 'slug'),
             Hydrate::channel($data, 'channel'),
             Hydrate::nullableString($data, 'description'),
             Hydrate::string($data, 'status'),
             Hydrate::string($data, 'updatedAt'),
-            isset($data['currentVersion']) && is_array($data['currentVersion'])
-                ? TemplateVersion::fromArray($data['currentVersion'])
-                : null,
+            $currentVersion !== null ? TemplateVersion::fromArray($currentVersion) : null,
         );
     }
 }

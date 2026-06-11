@@ -53,6 +53,25 @@ final class Hydrate
         return is_scalar($v) ? (bool) $v : false;
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>|null
+     */
+    public static function nullableAssoc(array $data, string $key): ?array
+    {
+        $v = $data[$key] ?? null;
+        if (!is_array($v)) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($v as $k => $value) {
+            $out[(string) $k] = $value;
+        }
+
+        return $out;
+    }
+
     /** @param array<string,mixed> $data */
     public static function channel(array $data, string $key): Channel
     {
